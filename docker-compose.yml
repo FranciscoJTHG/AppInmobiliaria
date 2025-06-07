@@ -1,0 +1,34 @@
+# version: "3.8"
+services:
+  backend:
+    build: 
+      context: ./Back-inmobiliaria
+    ports:
+      - "3000:3000"
+    env_file:
+      - ./Back-inmobiliaria/.env
+    command: ["sh", "-c", "/wait-for-it.sh db:5432 -- npm run dev"] # script para esperar a que la base de datos esté lista
+    depends_on:
+      - db
+
+  # frontend:
+  #   build:
+  #     context: ./Front-inmobiliaria
+  #   ports:
+  #     - "5173:5173"    # O el puerto de tu frontend (vite, react-scripts, etc)
+  #   depends_on:
+  #     - backend
+
+  db:
+    image: postgres:14
+    environment:
+      - POSTGRES_USER=${DB_USER}
+      - POSTGRES_PASSWORD=${DB_PASSWORD}
+      - POSTGRES_DB=${DB_NAME}
+    ports:
+      - "5432:5432"
+    volumes:
+      - db_data:/var/lib/postgresql/data
+
+volumes:
+  db_data:
